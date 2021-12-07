@@ -1,0 +1,60 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <script src='https://8x8.vc/external_api.js'></script>
+        <!-- <script src='https://meet.jit.si/external_api.js'></script> -->
+        <style>html, body, #jaas-container { height: 100%; }</style>
+        <script>
+          window.onload = () => {
+            var domain = "8x8.vc";
+            // var domain = "meet.jit.si";
+            var options = {
+                roomName: "vpaas-magic-cookie-cbfff144a936442b94312170fa752108/YizeWeb",
+                parentNode: document.querySelector('#jaas-container'),
+                height: 768,
+                width: 1024,
+            }
+            var api = new JitsiMeetExternalAPI(domain, options);
+            
+            // // set new password for channel
+            // api.addEventListener('participantRoleChanged', function(event) {
+            //     api.executeCommand('password', 'yizedewangzhan');
+            //     api.executeCommand('toggleLobby', true);
+            // });
+        
+            // // join a protected channel
+            // api.on('passwordRequired', function () {
+            //     api.executeCommand('password', 'The Password');
+            // });
+
+            // post jwt
+            const express = require("@runkit/runkit/express-endpoint/1.0.0");
+            let app = express(exports);
+            let bodyParser = require('body-parser');
+            app.use(bodyParser.json());
+
+            const jwt = require('jsonwebtoken');
+
+            app.post("/jwt", (req, res) => {
+                const privateKey = `
+                -----BEGIN RSA PRIVATE KEY-----
+                ${process.env.jaas_demo_private_key}
+                -----END RSA PRIVATE KEY-----
+                `;
+                const payload = req.body.claims;
+                const options = {
+                            'algorithm': "RS256",
+                            'keyid': "vpaas-magic-cookie-cbfff144a936442b94312170fa752108/0ba0fb"
+                        };
+    
+                        const token = jwt.sign(payload, privateKey, options);
+                        res.json({"token": token});
+                    });
+        }
+        </script>
+      </head>
+      <body><div id="jaas-container" /></body>
+    </html>
+
+
